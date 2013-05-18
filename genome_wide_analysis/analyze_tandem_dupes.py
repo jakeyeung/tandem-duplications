@@ -14,6 +14,9 @@ _cur_dir = os.path.dirname(os.path.realpath(__file__))
 _upthree_dir = os.path.dirname(os.path.dirname(os.path.dirname(_cur_dir)))
 _plot_dir = os.path.join(_upthree_dir, 'inputs')
 
+def openFile(fname):
+    pass
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
