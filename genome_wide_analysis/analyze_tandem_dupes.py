@@ -21,7 +21,9 @@ import numpy as np
 
 _cur_dir = os.path.dirname(os.path.realpath(__file__))
 _upthree_dir = os.path.dirname(os.path.dirname(os.path.dirname(_cur_dir)))
-_plot_dir = os.path.join(_upthree_dir, 'inputs')
+_input_dir = os.path.join(_upthree_dir, 'inputs')
+_output_dir = os.path.join(_upthree_dir, 'outputs')
+_plot_dir = os.path.join(_output_dir, 'plots')
 
 
 # Set constants
@@ -30,7 +32,7 @@ chromosome_list = [str('chr%s' %i) for i in range(1, 23)]
 chromosome_list.append('chrX')
 chromosome_list.append('chrY')
 
-print(chromosome_list)
+# print(chromosome_list)
 
 '''
 def place_by_tss(tandem_path, genome_path, chromosome, chromosome_list):
@@ -157,14 +159,13 @@ def get_tandem_tss_distribution(file_path, file_start_colname,
                 tandem_curr = int(file_row[file_start_index])
                 index_start = 0
                 
+                '''
                 if len(tss_list) > 0:
                     tandem_prev = tss_list[-1]
-                    if tandem_curr < tandem_prev:
-                        print('Done for chromosome %s' %chromosome)
-                        break
-                    print(len(tss_list), tss_list[-1])
+                    # print(len(tss_list), tss_list[-1])
                     index_start = genome_tss.index(tandem_prev)
                     print('Starting at index of %s of %s' %(index_start, len(genome_tss)))
+                '''
                     
                 count = 0
                 for i in xrange(index_start, len(genome_tss)):
@@ -189,6 +190,7 @@ def get_tandem_tss_distribution(file_path, file_start_colname,
                         tss_list.append(tss_list_currprev[dist_index])
                         
                         # Print summary
+                        '''
                         print('%s closest TSS is %s far away at %s. ' \
                               ' i is %s' %(tandem_curr, 
                                           dist_list[dist_index], 
@@ -200,6 +202,7 @@ def get_tandem_tss_distribution(file_path, file_start_colname,
                                                                  dist_prev, 
                                                                  tss_curr,
                                                                   tss_prev))
+                        '''
                         break
                     # print tandem_curr, tss_curr, dist_curr, tss_prev
                     elif i == len(genome_tss):
@@ -243,8 +246,8 @@ if __name__ == '__main__':
     tandem_fname = sys.argv[1]
     genome_fname = sys.argv[2]
     
-    tandem_path = os.path.join(_plot_dir, tandem_fname)
-    genome_path = os.path.join(_plot_dir, genome_fname)
+    tandem_path = os.path.join(_input_dir, tandem_fname)
+    genome_path = os.path.join(_input_dir, genome_fname)
     
     # print _plot_dir
     # print tandem_path
@@ -260,11 +263,42 @@ if __name__ == '__main__':
                                                          'chromosome_1', genome_tss, chromosome, chromosome_list)
         merged_tss_list.extend(dist_from_tss_list)
     
-    hist, bins = np.histogram(merged_tss_list, bins=100)
+    # plt.hist(merged_tss_list, 5000, normed=1, facecolor='blue', alpha=0.75)
+    
+    hist, bins = np.histogram(merged_tss_list, bins=1100)
     width = 0.7*(bins[1]-bins[0])
     center = (bins[:-1]+bins[1:])/2
     plt.bar(center, hist, align = 'center', width = width)
-    plt.show()
+    
+    plt.xlabel('Distance from a known TSS')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of filtered tandem duplications by TSS')
+    plt.xlim([-50000, 50000])
+    plt.savefig(os.path.join(_plot_dir, 'TSS_distribution.pdf'))
+    
+    total = len(merged_tss_list)
+    
+    abs_merged_tss_list = [abs(i) for i in merged_tss_list]
+    print abs_merged_tss_list
+    
+    lessthan2kb = []
+    btwn2to10kb = []
+    greaterthan10kb = []
+    for dist in abs_merged_tss_list:
+        if dist <= 2000:
+            lessthan2kb.append(dist)
+        elif dist > 2000 and dist < 10000:
+            btwn2to10kb.append(dist)
+        elif dist > 10000:
+            greaterthan10kb.append(dist)
+        else:
+            print('Error: unknown distance...')
+            sys.exit()
+    
+    print float(len(lessthan2kb)) / total
+    print float(len(btwn2to10kb)) / total
+    print float(len(greaterthan10kb)) / total
+        
     
     
     # place_by_tss(tandem_path, genome_path, chromosome, chromosome_list)
