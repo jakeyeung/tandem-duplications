@@ -8,10 +8,11 @@ Various plotting methods
 import matplotlib.pyplot as plt
 # from scipy.stats import gaussian_kde
 import numpy as np
+import sys
 
 
 def plot_binned_bar_graph(xlist, bins, xmin, xmax, xlabel, 
-                          ylabel, title, full_save_path):
+                          ylabel, title, full_save_path, autoxlim=False):
     '''
     Plot almost like a histogram but bar graph, user specify bins
     '''
@@ -23,7 +24,13 @@ def plot_binned_bar_graph(xlist, bins, xmin, xmax, xlabel,
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.xlim([xmin, xmax])
+    if autoxlim==False:
+        plt.xlim([xmin, xmax])
+    elif autoxlim==True:
+        pass
+    else:
+        print('autoxlim is neither true nor false')
+        sys.exit()
     plt.savefig(full_save_path)
     
 def plot_tandem_tss(tandem_list_pairs, tss_list, chromosome):

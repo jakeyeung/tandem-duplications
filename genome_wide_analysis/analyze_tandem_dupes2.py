@@ -23,8 +23,10 @@ chromosome_list = [str('chr%s' %i) for i in range(1, 23)]
 chromosome_list.append('chrX')
 chromosome_list.append('chrY')
 plot_output_fname = os.path.join(_plot_dir, 
-                                 'tandem_dupe_chr_distribution_10kb.pdf')
-bins_in_plot = 2000
+                                 'tandem_dupe_chr_distribution_end2.pdf')
+tandem_position_colname = 'end_2'
+tandem_chrcolname = 'chromosome_1'
+bins_in_plot = 75    # 2000 for xlim[-10000, 10000], 100 if no xlims
 xmin = -10000
 xmax = 10000
 
@@ -44,8 +46,8 @@ if __name__ == '__main__':
     all_tss = genome_info.get_all_tss_locations(genome_path, 'chrom', 'txStart', chromosome_list)
     
     all_tandem_dupes = tandem_data.tandem_dupes_all(tandem_path, 
-                                                    'start_1', 
-                                                    'chromosome_1', 
+                                                    tandem_position_colname, 
+                                                    tandem_chrcolname, 
                                                     all_tss, 
                                                     chromosome_list)
     
@@ -65,7 +67,8 @@ if __name__ == '__main__':
                                  xmax,
                                  'Min Distance to TSS', 
                                  'Frequency', 'Tandem Duplications by Min Dist to TSS', 
-                                 plot_output_fname)
+                                 plot_output_fname, 
+                                 autoxlim=False)
     
     largest_tss_dic = {}
     for k, l in all_tandem_dupes.iteritems():
