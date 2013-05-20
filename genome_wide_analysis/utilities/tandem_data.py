@@ -8,6 +8,7 @@ Created on 2013-05-19
 import sys
 import csv
 
+
 def get_tandem_tss_distribution(file_path, file_start_colname, 
                                 file_chr_colname, 
                                 genome_tss, chromosome, chromosome_list):
@@ -125,7 +126,6 @@ def tandem_dupes_all(file_path, file_start_colname,
             tandem_dupe_pos[c] = []
         
         for file_row in file_reader:
-            
             current_chr = file_row[file_chr_index]
             current_pos = file_row[file_start_index]
             
@@ -140,6 +140,7 @@ def tandem_dupes_all(file_path, file_start_colname,
             count += len(l)
         print('%s tandem dupes found' %count)
         return tandem_dupe_pos
+    
     
 def tandem_dupes_all_pairs(file_path, file_start_colname,
                            file_end_colname,
@@ -175,7 +176,6 @@ def tandem_dupes_all_pairs(file_path, file_start_colname,
             tandem_dupe_pos_pairs[c] = []
             
         for file_row in file_reader:
-        
             current_chr = file_row[file_chr_index]
             current_pos = file_row[file_start_index]
             current_pos_end = file_row[file_end_index]
@@ -192,4 +192,39 @@ def tandem_dupes_all_pairs(file_path, file_start_colname,
             count += len(l)
         print('%s tandem dupes pairs found' %count)
         return tandem_dupe_pos_pairs
+    
+    
+def calculate_tandem_gc_content(file_path, file_seq_colname, file_chr_colname):
+
+    with open(file_path, 'rb') as read_file:
+        file_reader = csv.reader(read_file, delimiter='\t')
+        file_colnames = file_reader.next()
+        
+        try: 
+            file_gc_index = file_colnames.index(file_seq_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'sequence column name.' %file_seq_colname)
+            sys.exit()
+        try: 
+            file_chr_index = file_colnames.index(file_chr_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_chr_colname)
+            sys.exit()
+        
+        gc_content = []    # List of tuples, content and chromosome.
+        for file_row in file_reader:
+            sequence = file_row[file_gc_index]
+            chromosome = file_row[file_chr_index]
+            gc_count = 0
+            for base in sequence:
+                if base in ['G', 'C']:
+                    gc_count += 1
+            gc_content.append(((float(gc_count)/len(sequence)), chromosome))
+    return gc_content
+                    
+            
+            
+        
     

@@ -5,6 +5,9 @@ Created on 2013-05-19
 '''
 
 
+import sys
+
+
 def calc_tss_dist(all_tandems, all_tss, chromosome_list):
     '''
     Return distance of tandem duplication from TSS, grouped by chromosomes
@@ -48,6 +51,25 @@ def calc_tss_dist(all_tandems, all_tss, chromosome_list):
                 prev_dist = curr_dist
                 prev_tandem = curr_tandem
     return tss_distances, closest_tss_locs
+
+def bin_distances(distance_from_tss_list):
+    lessthan2kb = []
+    btwn2kb10kb = []
+    grtrthan10kb = []
+    for dist in distance_from_tss_list:
+        if abs(dist) <= 2000:
+            lessthan2kb.append(dist)
+        elif abs(dist) > 2000 and abs(dist) <= 10000:
+            btwn2kb10kb.append(dist)
+        elif grtrthan10kb > 10000:
+            grtrthan10kb.append(dist)
+        else:
+            sys.exit('Error, unknown distance')
+    t_len = len(distance_from_tss_list)
+    print '{0:.3f}% less than 2kb'.format(float(len(lessthan2kb))/t_len)
+    print '{0:.3f}% btwn 2kb to 10kb'.format(float(len(btwn2kb10kb))/t_len)
+    print '{0:.3f}% greater than 10kb'.format(float(len(grtrthan10kb))/t_len)
+    return float(len(lessthan2kb))/t_len, float(len(btwn2kb10kb))/t_len, float(len(grtrthan10kb))/t_len
 
 
     

@@ -22,7 +22,7 @@ _plot_dir = set_directories.set_directories('inputs',
 # chromosome = raw_input('Insert chromosome in chr format (chr1, chrX, chrY): ')
 plot_output_fname = os.path.join(_plot_dir, 'tandem_dupe_chr_distribution_null_10kb.pdf')
 numb_rands_per_chr = 1000
-bins_in_plot = 20000
+bins_in_plot = 2000
 xmin = -10000
 xmax = 10000
 
@@ -32,7 +32,6 @@ if __name__ == '__main__':
         print('TSS data must be given on the command line.')
         sys.exit()
     genome_fname = sys.argv[1]
-    
     genome_path = os.path.join(_input_dir, genome_fname)
     
     chromosome_list = chr_tools.get_chr_list()
@@ -51,6 +50,12 @@ if __name__ == '__main__':
     for dist_list in tss_distances_dict.values():    # Each value is a list
         tss_distances_list.extend(dist_list)
         
+    lessthan2kb, btwn2kb10kb, grtrthan10kb = \
+    integrate_data.bin_distances(tss_distances_list)
+    
+    # print lessthan2kb, btwn2kb10kb, grtrthan10kb
+        
+    
     jplots.plot_binned_bar_graph(tss_distances_list, bins_in_plot, 
                                  xmin,
                                  xmax,

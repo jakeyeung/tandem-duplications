@@ -54,6 +54,11 @@ if __name__ == '__main__':
     min_dists_list = []
     for min_dists_chr_list in min_dists.values():
         min_dists_list.extend(min_dists_chr_list)
+    
+    lessthan2kb, btwn2kb10kb, grtrthan10kb = \
+    integrate_data.bin_distances(min_dists_list)
+    
+    # print len(lessthan2kb), len(btwn2kb10kb), len(grtrthan10kb)
 
     jplots.plot_binned_bar_graph(min_dists_list, bins_in_plot,
                                  xmin,
