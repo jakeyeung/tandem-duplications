@@ -95,3 +95,101 @@ def get_tandem_tss_distribution(file_path, file_start_colname,
                     dist_prev = dist_curr
                     count += 1
     return dist_from_tss_list
+
+    
+def tandem_dupes_all(file_path, file_start_colname,
+                        file_chr_colname, 
+                        all_genome_tss, chromosome_list):
+    
+    with open(file_path, 'rb') as read_file:
+        file_reader = csv.reader(read_file, delimiter='\t')
+        file_colnames = file_reader.next()
+        
+        try: 
+            file_start_index = file_colnames.index(file_start_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_start_colname)
+            sys.exit()
+        
+        try: 
+            file_chr_index = file_colnames.index(file_chr_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_chr_colname)
+            sys.exit()
+            
+        # Initialize with empty list
+        tandem_dupe_pos = {}
+        for c in chromosome_list:
+            tandem_dupe_pos[c] = []
+        
+        for file_row in file_reader:
+            
+            current_chr = file_row[file_chr_index]
+            current_pos = file_row[file_start_index]
+            
+            if current_chr in tandem_dupe_pos:
+                tandem_dupe_pos[current_chr].append(int(current_pos))
+            else:
+                print('Warning: cannot find %s in chromosome list' %current_chr)
+                sys.exit('Exiting...')
+        
+        count = 0
+        for l in tandem_dupe_pos.values():
+            count += len(l)
+        print('%s tandem dupes found' %count)
+        return tandem_dupe_pos
+    
+def tandem_dupes_all_pairs(file_path, file_start_colname,
+                           file_end_colname,
+                           file_chr_colname, 
+                           all_genome_tss, chromosome_list):
+    
+    with open(file_path, 'rb') as read_file:
+        file_reader = csv.reader(read_file, delimiter='\t')
+        file_colnames = file_reader.next()
+        
+        try: 
+            file_start_index = file_colnames.index(file_start_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_start_colname)
+            sys.exit()
+        try: 
+            file_end_index = file_colnames.index(file_end_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_end_colname)
+            sys.exit()
+        try: 
+            file_chr_index = file_colnames.index(file_chr_colname)
+        except ValueError:
+            print('ValueError: couldnt find match %s to ' \
+             'chromosome column name.' %file_chr_colname)
+            sys.exit()
+            
+        # Initialize with empty list
+        tandem_dupe_pos_pairs = {}
+        for c in chromosome_list:
+            tandem_dupe_pos_pairs[c] = []
+            
+        for file_row in file_reader:
+        
+            current_chr = file_row[file_chr_index]
+            current_pos = file_row[file_start_index]
+            current_pos_end = file_row[file_end_index]
+        
+            if current_chr in tandem_dupe_pos_pairs:
+                tandem_dupe_pos_pairs[current_chr].append((int(current_pos), 
+                                                           int(current_pos_end)))
+            else:
+                print('Warning: cannot find %s in chromosome list' %current_chr)
+                sys.exit('Exiting...')
+                
+        count = 0
+        for l in tandem_dupe_pos_pairs.values():
+            count += len(l)
+        print('%s tandem dupes pairs found' %count)
+        return tandem_dupe_pos_pairs
+    

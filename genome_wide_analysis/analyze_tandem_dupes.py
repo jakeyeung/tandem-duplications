@@ -13,7 +13,7 @@ a text file downloaded from UCSC. See readme.md for input file information.
 import sys
 import time
 import os
-from utilities import plots, list_tools, genome_info, tandem_data
+from utilities import jplots, list_tools, genome_info, tandem_data
 
 
 # Set directories
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                                                                      chromosome_list)
         merged_tss_list.extend(dist_from_tss_list)
     
-    plots.plot_binned_bar_graph(merged_tss_list, 100, 
+    jplots.plot_binned_bar_graph(merged_tss_list, 100, 
                                  'Distance from a known TSS',
                                  'Frequency', 
                                  'Distribution of filtered tandem duplications by TSS', 
