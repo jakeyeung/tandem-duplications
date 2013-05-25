@@ -11,4 +11,10 @@ def chunks(my_list, n):
     of your list. 
     '''
     return [my_list[i:i+n] for i in range(0, len(my_list), n)]
+
+def flatten_list(nested_list):
+    '''
+    Takes a nested list and flattens it into a single list.
+    '''
+    return [item for sublist in nested_list for item in sublist]
     
