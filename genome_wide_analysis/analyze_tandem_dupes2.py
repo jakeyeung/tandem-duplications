@@ -23,12 +23,15 @@ chromosome_list = [str('chr%s' %i) for i in range(1, 23)]
 chromosome_list.append('chrX')
 chromosome_list.append('chrY')
 plot_output_fname = os.path.join(_plot_dir, 
-                                 'tandem_dupe_chr_distribution_end2.pdf')
-tandem_position_colname = 'end_2'
+                                 'tandem_dupe_chr_distribution_cdsStart_10kbxrange.pdf')
+tandem_position_colname = 'start_1'
 tandem_chrcolname = 'chromosome_1'
-bins_in_plot = 75    # 2000 for xlim[-10000, 10000], 100 if no xlims
+genomedat_chrcolname = 'chrom'
+genomedat_startcolname = 'cdsEnd'
+bins_in_plot = 1800   # 2000 for xlim[-10000, 10000], 100 if no xlims
 xmin = -10000
 xmax = 10000
+autoxlim = False    # True or False
 
 
 if __name__ == '__main__':
@@ -43,7 +46,10 @@ if __name__ == '__main__':
     tandem_path = os.path.join(_input_dir, tandem_fname)
     genome_path = os.path.join(_input_dir, genome_fname)
     
-    all_tss = genome_info.get_all_tss_locations(genome_path, 'chrom', 'txStart', chromosome_list)
+    all_tss = genome_info.get_all_tss_locations(genome_path, 
+                                                genomedat_chrcolname, 
+                                                genomedat_startcolname, 
+                                                chromosome_list)
     
     all_tandem_dupes = tandem_data.tandem_dupes_all(tandem_path, 
                                                     tandem_position_colname, 
@@ -65,15 +71,17 @@ if __name__ == '__main__':
     jplots.plot_binned_bar_graph(min_dists_list, bins_in_plot,
                                  xmin,
                                  xmax,
-                                 'Min Distance to TSS', 
-                                 'Frequency', 'Tandem Duplications by Min Dist to TSS', 
+                                 'Min Distance to %s' %genomedat_startcolname, 
+                                 'Frequency', 
+                                 'Tandem Duplications by Min Dist to %s' %genomedat_startcolname, 
                                  plot_output_fname, 
-                                 autoxlim=False)
+                                 autoxlim=autoxlim)
     
     largest_tss_dic = {}
     for k, l in all_tandem_dupes.iteritems():
         largest_tss_dic[k] = max(l)
     
+    print 'Largest distances by chromosome: '
     print largest_tss_dic
     
     

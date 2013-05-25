@@ -22,7 +22,7 @@ _plot_dir = os.path.join(_output_dir, 'plots')
 chromosome_list = [str('chr%s' %i) for i in range(1, 23)]
 chromosome_list.append('chrX')
 chromosome_list.append('chrY')
-plot_output_fname = 'tandem_dupe_chr_distribution.pdf'
+# plot_output_fname = 'tandem_dupe_chr_distribution.pdf'
 
 
 if __name__ == '__main__':
@@ -45,5 +45,8 @@ if __name__ == '__main__':
                                                                  all_tss, 
                                                                  chromosome_list)
     
-    jplots.plot_tandem_tss(all_tandem_dupes_pairs, all_tss, chromosome_list[1])
+    for chromosome in chromosome_list:
+        full_save_path = os.path.join(_plot_dir, 
+                                      'tandem_dupe_chr_distribution_%s.pdf' %chromosome)
+        jplots.plot_tandem_tss(all_tandem_dupes_pairs, all_tss, chromosome, full_save_path)
     

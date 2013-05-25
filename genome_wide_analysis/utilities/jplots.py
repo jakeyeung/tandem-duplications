@@ -33,7 +33,7 @@ def plot_binned_bar_graph(xlist, bins, xmin, xmax, xlabel,
         sys.exit()
     plt.savefig(full_save_path)
     
-def plot_tandem_tss(tandem_list_pairs, tss_list, chromosome):
+def plot_tandem_tss(tandem_list_pairs, tss_list, chromosome, full_save_path):
     '''
     For a chromosome, plot TSS_list as vertical lines and 
     tandem_list_pairs as vertical bars (start and end pos)
@@ -52,8 +52,8 @@ def plot_tandem_tss(tandem_list_pairs, tss_list, chromosome):
     for pairs in chr_tandem_list_pairs:
         plt.axvspan(pairs[0], pairs[1], facecolor='g', alpha=0.5)
     
-    print('Data crunched, plotting...')
-    plt.show()
+    print('Data crunched, plotting for %s' %chromosome)
+    plt.savefig(full_save_path)
     
 def plot_tandem_tss_nopairs(tandem_list, tss_list, chromosome):
     '''

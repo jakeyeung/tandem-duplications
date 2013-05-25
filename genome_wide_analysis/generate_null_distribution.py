@@ -8,6 +8,7 @@ import sys
 import os
 from utilities import set_directories, \
 chr_tools, genome_info, random_genome_locs, jplots, integrate_data
+from analyze_tandem_dupes2 import autoxlim
 
 # Set directories
 _cur_dir, \
@@ -20,11 +21,14 @@ _plot_dir = set_directories.set_directories('inputs',
 
 # Set constants
 # chromosome = raw_input('Insert chromosome in chr format (chr1, chrX, chrY): ')
-plot_output_fname = os.path.join(_plot_dir, 'tandem_dupe_chr_distribution_null_10kb.pdf')
+genome_chrcolname = 'chrom'
+genome_startcolname = 'txStart'
+plot_output_fname = os.path.join(_plot_dir, 'tandem_dupe_chr_distribution_null_10kb2.pdf')
 numb_rands_per_chr = 1000
-bins_in_plot = 2000
+bins_in_plot = 75    # 2000 for xmin xmax [-10000, 10000]
 xmin = -10000
 xmax = 10000
+autoxlim = True
 
 
 if __name__ == '__main__':
@@ -37,8 +41,8 @@ if __name__ == '__main__':
     chromosome_list = chr_tools.get_chr_list()
     
     all_tss = genome_info.get_all_tss_locations(genome_path, 
-                                                'chrom', 
-                                                'txStart', 
+                                                genome_chrcolname, 
+                                                genome_startcolname, 
                                                 chromosome_list)
     
     random_locs = random_genome_locs.generate_random_chr_pos(numb_rands_per_chr)
@@ -59,12 +63,13 @@ if __name__ == '__main__':
     jplots.plot_binned_bar_graph(tss_distances_list, bins_in_plot, 
                                  xmin,
                                  xmax,
-                                 'distance from TSS', 
+                                 'distance from %s' %genome_startcolname, 
                                  'frequency', 
-                                 'Random distribution of TSS distances '\
-                                 'across genome\n%s points per chromosome' \
-                                 %numb_rands_per_chr, 
-                                 plot_output_fname)
+                                 'Random distribution of Distances from %s'\
+                                 'across genome\n%s points per chromosome'\
+                                 %(genome_startcolname, numb_rands_per_chr), 
+                                 plot_output_fname,
+                                 autoxlim=autoxlim)
     
     
     

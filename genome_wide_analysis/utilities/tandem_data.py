@@ -12,6 +12,10 @@ import csv
 def get_tandem_tss_distribution(file_path, file_start_colname, 
                                 file_chr_colname, 
                                 genome_tss, chromosome, chromosome_list):
+    '''
+    An oldish piece of code replaced by 
+    tandem_dupes_all and tandem_dupes_all_pairs.
+    '''
     with open(file_path, 'rb') as read_file:
         file_reader = csv.reader(read_file, delimiter='\t')
         file_colnames = file_reader.next()
@@ -110,14 +114,16 @@ def tandem_dupes_all(file_path, file_start_colname,
             file_start_index = file_colnames.index(file_start_colname)
         except ValueError:
             print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_start_colname)
+             'start column name. Possible values are: ' %file_start_colname)
+            print file_colnames
             sys.exit()
         
         try: 
             file_chr_index = file_colnames.index(file_chr_colname)
         except ValueError:
             print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_chr_colname)
+             'chromosome column name. Possible values are: ' %file_chr_colname)
+            print file_colnames
             sys.exit()
             
         # Initialize with empty list
@@ -155,19 +161,22 @@ def tandem_dupes_all_pairs(file_path, file_start_colname,
             file_start_index = file_colnames.index(file_start_colname)
         except ValueError:
             print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_start_colname)
+             'start column name. Possible values are: ' %file_start_colname)
+            print file_colnames
             sys.exit()
         try: 
             file_end_index = file_colnames.index(file_end_colname)
         except ValueError:
             print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_end_colname)
+             'end column name. Possible values are: ' %file_end_colname)
+            print file_colnames
             sys.exit()
         try: 
             file_chr_index = file_colnames.index(file_chr_colname)
         except ValueError:
             print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_chr_colname)
+             'chromosome column name. Possible values are: ' %file_chr_colname)
+            print file_colnames
             sys.exit()
             
         # Initialize with empty list
