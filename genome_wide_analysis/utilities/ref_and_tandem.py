@@ -29,6 +29,9 @@ class data(object):
         self.refreader = csv.reader(self.reffile, delimiter='\t')
         self.tandemreader = csv.reader(self.tandemfile, delimiter='\t')
         
+        self.refheaders = self.refreader.next()
+        self.tandemheaders = self.tandemreader.next()
+        
     def __exit__(self, exittype, exitvalue, exittraceback):
         self.reffile.close()
         self.tandemfile.close()
