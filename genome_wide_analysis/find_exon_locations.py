@@ -2,17 +2,24 @@
 Created on 2013-05-25
 
 @author: jyeung
+
+FIXME and POTENTIAL BUGS:
+If you have no tandem duplication event OR if you have no exon coordinates in
+your reference data, weird things may happen. For example, the StopIteration
+error handler would be unable to assign the variable lastrow to anything! 
 '''
 
 
 import sys
-from utilities import set_directories, ref_and_tandem, chr_tools
+from utilities import set_directories, ref_and_tandem, chr_tools, jplots, list_tools
 
 
 # Set directories
 mydirs = set_directories.my_directories()
 inputdir = mydirs.joinpath(mydirs.root, 'inputs')
 outputdir = mydirs.joinpath(mydirs.root, 'outputs')
+plotsavedir = mydirs.joinpath(outputdir, 'plots', 'exon_distance')
+save_path_name = mydirs.joinpath(plotsavedir, 'exon_distances.pdf')
 
 # Define constants
 ref_chr_colname = 'chrom'
@@ -286,6 +293,20 @@ if __name__ == '__main__':
         print distances_dict
         print coordinates_dict
         print locations_dict
+    
+    # Convert dictionary to list
+    distances = []
+    for dist_list in distances_dict.values():
+        distances.append(dist_list)
+    
+    # Flatten list
+    distances = list_tools.flatten_list(distances)
+    # Plot results
+    jplots.plot_binned_bar_graph(distances, 100, -100000, 100000, 
+                                 'Distance from Exon', 'Frequency', 
+                                 'Title', save_path_name,
+                                 autoxlim=True)
+    print('Plot saved in %s' %save_path_name)
             
         
     

@@ -33,7 +33,6 @@ xmin = -10000
 xmax = 10000
 autoxlim = False    # True or False
 
-
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         print('Tandem dupes file and TSS data must be given on the command line.')

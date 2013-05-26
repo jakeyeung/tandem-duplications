@@ -76,6 +76,5 @@ def plot_tandem_tss_nopairs(tandem_list, tss_list, chromosome):
     
     print('Data crunched, plotting...')
     plt.show()
-        
     
     

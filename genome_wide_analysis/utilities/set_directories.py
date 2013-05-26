@@ -21,9 +21,10 @@ class my_directories(object):
         # self.input = os.path.join(self.root, input_folder_name)
         # self.output = os.path.join(self.root, output_folder_name)
         
-    def joinpath(self, directory, added_path):
-        full_path = os.path.join(directory, added_path)
-        return full_path
+    def joinpath(self, directory, *added_paths):
+        for path in added_paths:
+            directory = os.path.join(directory, path)
+        return directory
     
 def set_directories(input_folder_name, output_folder_name, plot_folder_name):
     '''
