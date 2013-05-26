@@ -88,6 +88,7 @@ def find_exon_coordinates(rf_data, chromosome, firstrow):
                 break
         except StopIteration:
             print('Ref row count: %s. No more rows to iterate.' %rf_data.refrowcount)
+            lastrow = row
             break
     
     # Sort and set exon_list
@@ -138,6 +139,11 @@ def calc_distance_from_exon(exon_coordinates, chromosome, firstrow):
                 break
         except StopIteration:
             print('Tandem row count %s. No more rows to iterate' %rf_data.tandemrowcount)
+            try:
+                lastrow = row
+            except UnboundLocalError:
+                print('Only one tandem event in %s, returning first row' %chromosome)
+                lastrow = firstrow
             break
     return distances_list, coordinates_list, locations_list, lastrow
                 
@@ -276,6 +282,7 @@ if __name__ == '__main__':
             coordinates_dict[chromosome] = coordinates_list
             locations_dict[chromosome] = locations_list
             print('Done for %s' %chromosome)
+            
         print distances_dict
         print coordinates_dict
         print locations_dict
