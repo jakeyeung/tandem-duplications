@@ -6,15 +6,22 @@ Created on 2013-05-19
 
 
 import sys
+import csv
 
 
-def calc_tss_dist(all_tandems, all_tss, chromosome_list):
+def calc_tss_dist(all_tandems, all_tss, chromosome_list, output_path):
     '''
     Return distance of tandem duplication from TSS, grouped by chromosomes
     '''
+    output_file = open(output_path, 'wb')
+    output_writer = csv.writer(output_file, delimiter='\t')
+    # Write output headers
+    output_writer.writerow(['chromosome', 'tandem_loc', 'distance_to_tss', 'tss_location'])
+    
     # Initialize dictionary
     tss_distances = {}
     closest_tss_locs = {}
+    
     
     # Loop through chromosomes
     for c in chromosome_list:
@@ -43,6 +50,8 @@ def calc_tss_dist(all_tandems, all_tss, chromosome_list):
                     # Append dictionaries/list
                     tss_distances[c].append(min_dist)
                     closest_tss_locs[c].append(closest_tss)
+                    # Write to output file
+                    output_writer.writerow([c, curr_tandem, min_dist, closest_tss])
                     
                     # Min dist found, move to next tandem duplication
                     break
@@ -50,6 +59,8 @@ def calc_tss_dist(all_tandems, all_tss, chromosome_list):
                 tss_count += 1
                 prev_dist = curr_dist
                 prev_tandem = curr_tandem
+                
+    output_file.close()
     return tss_distances, closest_tss_locs
 
 def bin_distances(distance_from_tss_list):

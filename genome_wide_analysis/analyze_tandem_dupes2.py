@@ -24,6 +24,7 @@ chromosome_list.append('chrX')
 chromosome_list.append('chrY')
 plot_output_fname = os.path.join(_plot_dir, 
                                  'tandem_dupe_chr_distribution_cdsStart_10kbxrange.pdf')
+text_output_path = os.path.join(_output_dir, 'distance_to_tss.txt')
 tandem_position_colname = 'start_1'
 tandem_chrcolname = 'chromosome_1'
 genomedat_chrcolname = 'chrom'
@@ -56,7 +57,11 @@ if __name__ == '__main__':
                                                     all_tss, 
                                                     chromosome_list)
     
-    min_dists, closest_tss = integrate_data.calc_tss_dist(all_tandem_dupes, all_tss, chromosome_list)
+    
+    min_dists, closest_tss = integrate_data.calc_tss_dist(all_tandem_dupes, 
+                                                          all_tss, 
+                                                          chromosome_list, 
+                                                          text_output_path)
     
     min_dists_list = []
     for min_dists_chr_list in min_dists.values():

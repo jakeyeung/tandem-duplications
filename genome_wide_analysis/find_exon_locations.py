@@ -28,7 +28,11 @@ ref_exonends_colname = 'exonEnds'
 tandem_chr_colname = 'chromosome_1'    # Equal to 'chromosome_2'
 tandem_start_colname = 'start_1'
 tandem_end_colname = 'end_2'
-
+output_tandem_pos_colname = 'tandem_dupe_position'
+output_dist_colname = 'distance_to_exon'
+output_exonstart_colname = 'closest_exon_start'
+output_exonend_colname = 'closest_exon_end'
+output_event_colname = 'exon_or_nonexon'
 
 def find_exon_coordinates(rf_data, chromosome, firstrow):
     '''
@@ -136,16 +140,33 @@ def calc_distance_from_exon(exon_coordinates, chromosome, firstrow):
             cur_chr = row[rf_data.tandemheaders.index(tandem_chr_colname)]
             tandem_pos = int(row[rf_data.tandemheaders.index(tandem_start_colname)])
             if cur_chr == chromosome:
+                # Get distance, coordinate and whether its exon or nonexon
                 distance, coordinate, location = check_exon_or_not(tandem_pos, exon_coordinates)
                 distances_list.append(distance)
                 coordinates_list.append(coordinate)
                 locations_list.append(location)
+                # Append results to current row
+                # If you append more things in the row, ensure that 
+                # you've written enough colnames in your headers to match
+                # the output. 
+                row.append(tandem_pos)
+                row.append(distance)
+                row.append(coordinate[0])    # Exon start
+                row.append(coordinate[1])    # Exon end
+                row.append(location)    # Exon or nonexon
+                # Write appended row to file
+                # Check if row length matches writefile header
+                if len(row) == len(rf_data.outheaders):
+                    rf_data.writerow(row)
+                else: 
+                    sys.exit('Error: length of row to write '\
+                             'does not match length of colnames')
             else:
                 print('Current row chr is %s, breaking.' %cur_chr)
                 lastrow = row
                 break
         except StopIteration:
-            print('Tandem row count %s. No more rows to iterate' %rf_data.tandemrowcount)
+            print('Tandem row count %s. No more rows to iterate.' %rf_data.tandemrowcount)
             try:
                 lastrow = row
             except UnboundLocalError:
@@ -153,54 +174,6 @@ def calc_distance_from_exon(exon_coordinates, chromosome, firstrow):
                 lastrow = firstrow
             break
     return distances_list, coordinates_list, locations_list, lastrow
-                
-    '''
-    # Calculate distance for first exon, then loop. Dist = tandem - exonstart
-    prev_exonstart =  exon_coordinates[0][0]
-    prev_exonend = exon_coordinates[0][1]
-    
-    # Check if it is between exon
-    if tandem_pos > prev_exonstart and tandem_pos < prev_exonend:
-        distances_list.append(0)
-        coordinates_list.append(exon_coordinates[0])
-        raw_input('%s is between %s' %(tandem_pos, exon_coordinates[0]))
-    
-    # Loop for all other distances
-    # List index, starts at 1 because we did first exon already
-    for i in range(1, len(exon_coordinates)):
-        cur_exonstart = exon_coordinates[i][0]
-        cur_exonend = exon_coordinates[i][1]
-        
-        if tandem_pos > cur_exonstart and tandem_pos < cur_exonend:
-            location.append('exon')
-            distances_list.append(0)
-            coordinates_list.append(exon_coordinates[i])
-            break
-        
-        elif tandem_pos > prev_exonend and tandem_pos < cur_exonstart:
-            location.append('non-exon')
-            # Calculate shortest distance, is it prev or cur exon?
-            dist_prev = exon_coordinates[i-1][1] - tandem_pos
-            dist_cur = exon_coordinates[i][0] - tandem_pos
-            if abs(dist_cur) < abs(dist_prev):    # Choose cur exon
-                coordinates_list.append(exon_coordinates[i])
-                distances_list.append(dist_cur)
-            elif abs(dist_cur) > abs(dist_prev):    # Choose prev
-                coordinates_list.append(exon_coordinates[i-1])
-                distances_list.append(dist_prev)
-            else:
-                raw_input('Distances are equal, enter to put cur exon as shortest.')
-                coordinates_list.append(exon_coordinates[i])
-                distances_list.append(dist_cur)
-            break
-        else:    # Haven't found closest exon yet, keep looping.
-            prev_exonstart = cur_exonstart
-            prev_exonend = cur_exonend
-    '''
-            
-    # Now repeat for all tandem dupes in chromosome...
-    
-    return distances_list, firstrow
 
 def check_exon_or_not(tandem_pos, exon_coordinates):
     # Calculate distance for first exon, then loop. Dist = tandem - exonstart
@@ -256,6 +229,7 @@ if __name__ == '__main__':
         print('Reference genome info and tandem dupes file must be given on the command line.')
         sys.exit()
 
+    output_fname = sys.argv[3]
     ref_fname = sys.argv[2]    
     tandem_fname = sys.argv[1]
     
@@ -264,9 +238,15 @@ if __name__ == '__main__':
     rf_data = ref_and_tandem.data(ref_path=mydirs.joinpath(inputdir, 
                                                            ref_fname), 
                                   tandem_path=mydirs.joinpath(inputdir, 
-                                                              tandem_fname))
+                                                              tandem_fname),
+                                  tandem_output_path=mydirs.joinpath(outputdir, 
+                                                                     output_fname))
     
     with rf_data:
+        # First initialize write header colnames.
+        rf_data.writecolnames(output_tandem_pos_colname,
+                              output_dist_colname, output_exonstart_colname, 
+                              output_exonend_colname, output_event_colname)
         # Supply its first row
         # print rf_data.refheaders
         # print rf_data.tandemheaders
@@ -282,9 +262,17 @@ if __name__ == '__main__':
             # Input first row of chr1, get firstrow of chr2 back and exon_dict
             # containing exonStart and End positions of chr1. Repeat for all
             # chromosomes. 
-            exon_coordinates, reffirstrow = find_exon_coordinates(rf_data, chromosome, reffirstrow)
+            exon_coordinates, \
+            reffirstrow = find_exon_coordinates(rf_data, 
+                                                chromosome, 
+                                                reffirstrow)
             # From tandem dupe, calculate distance from nearest exon. 
-            distances_list, coordinates_list, locations_list, tandemfirstrow = calc_distance_from_exon(exon_coordinates, chromosome, tandemfirstrow)
+            distances_list, \
+            coordinates_list, \
+            locations_list, \
+            tandemfirstrow = calc_distance_from_exon(exon_coordinates, 
+                                                     chromosome, 
+                                                     tandemfirstrow)
             distances_dict[chromosome] = distances_list
             coordinates_dict[chromosome] = coordinates_list
             locations_dict[chromosome] = locations_list
