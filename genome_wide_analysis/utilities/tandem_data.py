@@ -203,34 +203,59 @@ def tandem_dupes_all_pairs(file_path, file_start_colname,
         return tandem_dupe_pos_pairs
     
     
-def calculate_tandem_gc_content(file_path, file_seq_colname, file_chr_colname):
-
+def calculate_tandem_gc_content(file_path, file_seq_colname, file_chr_colname, 
+                                output_path, *output_additional_colnames):
+    '''
+    Reads tandem duplication file, calculates gc content and sequence length.
+    Outputs gc content and length of sequence to writefile. 
+    '''
     with open(file_path, 'rb') as read_file:
-        file_reader = csv.reader(read_file, delimiter='\t')
-        file_colnames = file_reader.next()
-        
-        try: 
-            file_gc_index = file_colnames.index(file_seq_colname)
-        except ValueError:
-            print('ValueError: couldnt find match %s to ' \
-             'sequence column name.' %file_seq_colname)
-            sys.exit()
-        try: 
-            file_chr_index = file_colnames.index(file_chr_colname)
-        except ValueError:
-            print('ValueError: couldnt find match %s to ' \
-             'chromosome column name.' %file_chr_colname)
-            sys.exit()
-        
-        gc_content = []    # List of tuples, content and chromosome.
-        for file_row in file_reader:
-            sequence = file_row[file_gc_index]
-            chromosome = file_row[file_chr_index]
-            gc_count = 0
-            for base in sequence:
-                if base in ['G', 'C']:
-                    gc_count += 1
-            gc_content.append(((float(gc_count)/len(sequence)), chromosome))
+        with open(output_path, 'wb') as write_file:
+            # Initialize and get colnames
+            file_reader = csv.reader(read_file, delimiter='\t')
+            file_colnames = file_reader.next()
+            output_writer = csv.writer(write_file, delimiter='\t')
+            # Create output colnames by adding additional colnames
+            output_colnames = file_colnames
+            for cname in output_additional_colnames:
+                # Should have three additional colnames:
+                # sequence, gc_content and length_of_sequence
+                output_colnames.append(cname)
+            # Write colnames to output file.
+            output_writer.writerow(output_colnames)
+            
+            # Get index numbers for reader           
+            try: 
+                file_gc_index = file_colnames.index(file_seq_colname)
+            except ValueError:
+                print('ValueError: couldnt find match %s to ' \
+                 'sequence column name.' %file_seq_colname)
+                sys.exit()
+            try: 
+                file_chr_index = file_colnames.index(file_chr_colname)
+            except ValueError:
+                print('ValueError: couldnt find match %s to ' \
+                 'chromosome column name.' %file_chr_colname)
+                sys.exit()
+            
+            gc_content = []    # List of tuples, content and chromosome.
+            for file_row in file_reader:
+                sequence = file_row[file_gc_index]
+                chromosome = file_row[file_chr_index]
+                gc_count = 0
+                for base in sequence:
+                    if base in ['G', 'C']:
+                        gc_count += 1
+                gc_frac = float(gc_count)/len(sequence)
+                gc_content.append((gc_frac, chromosome, len(sequence)))
+                # Write to file
+                file_row.append(gc_frac)
+                file_row.append(len(sequence))
+                if len(file_row) == len(output_colnames):
+                    output_writer.writerow(file_row)
+                else:
+                    print('File row length %s not equal to length of colnames %s' %(len(file_row), len(output_colnames)))
+                    sys.exit()
     return gc_content
                     
             
