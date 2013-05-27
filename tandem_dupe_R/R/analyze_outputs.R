@@ -23,6 +23,9 @@ output_dir <- file.path(root_dir, 'outputs')
 # SetConstants ------------------------------------------------------------
 
 filename <- 'tandem_dupes_data_appended.txt'
+plotfolder <- 'plots'
+histoplots_fname <- 'ggplot2_tandem_duplication_summary.pdf'
+seqplots_fname <- 'seqlogo_beginning_and_end.pdf' 
 motif_length <- 30
 
 
@@ -68,11 +71,26 @@ tandem_dat <- read.table(file.path(input_dir, filename), header=TRUE, sep='\t')
 
 # PlotDat -----------------------------------------------------------------
 
-qplot(distance_to_tss, data=tandem_dat, binwidth=10000) + facet_wrap(~chromosome_1) + xlim(-100000, 100000)
-qplot(seq_length, data=tandem_dat, binwidth=20, fill=exon_or_nonexon)
-qplot(distance_to_exon, data=tandem_dat, binwidth=10000) + facet_wrap(~chromosome_1) + xlim(-100000, 100000)
-qplot(gc_content, data=tandem_dat, binwidth=0.02) + facet_wrap(~chromosome_1) + xlim(0, 1)
-
+pdf(file.path(output_dir, plotfolder, histoplots_fname), width=20, height=15)
+# Distance to tss
+qplot(distance_to_tss, data=tandem_dat, binwidth=5000, 
+      fill=exon_or_nonexon) + xlim(-100000, 100000)
+qplot(distance_to_tss, data=tandem_dat, binwidth=10000, 
+      fill=exon_or_nonexon) + facet_wrap(~chromosome_1) + xlim(-100000, 100000)
+# Sequence length
+qplot(seq_length, data=tandem_dat, binwidth=10)
+qplot(seq_length, data=tandem_dat, binwidth=20) + facet_wrap(~chromosome_1)
+# Distance to exon
+qplot(distance_to_exon, data=tandem_dat, binwidth=5000, 
+      fill=exon_or_nonexon) + xlim(-100000, 100000)
+qplot(distance_to_exon, data=tandem_dat, binwidth=10000, 
+      fill=exon_or_nonexon) + facet_wrap(~chromosome_1) + xlim(-100000, 100000)
+# GC content
+qplot(gc_content, data=tandem_dat, binwidth=0.02, 
+      fill=exon_or_nonexon) + xlim(0, 1)
+qplot(gc_content, data=tandem_dat, binwidth=0.04, 
+      fill=exon_or_nonexon) + facet_wrap(~chromosome_1) + xlim(0, 1)
+dev.off()
 
 
 # SeqLogo -----------------------------------------------------------------
@@ -96,14 +114,12 @@ base_weight_frac_end <- motif_weights(endSeq, motif_length)
 base_weight_frac_end
 
 # Use SeqLogo library to make plot
+pdf(file.path(output_dir, plotfolder, seqplots_fname))
 pStart <- makePWM(base_weight_frac)
-seqLogo(pStart, ic.scale=FALSE, main='title')
+seqLogo(pStart, ic.scale=FALSE)
+grid.text(sprintf('Sequence from Beginning to Base 30'), x=0.5, y=1, hjust=0.5, vjust=1)
 # Plot
 pEnd <- makePWM(base_weight_frac_end)
-seqLogo(pEnd, ic.scale=FALSE, xlab='position')
-grid.text(sprintf('Hello'), x=0.5, y=1, hjust=0.5, vjust=1)
-
-
-
-
-
+seqLogo(pEnd, ic.scale=FALSE)
+grid.text(sprintf('Sequence from End-30 to End'), x=0.5, y=1, hjust=0.5, vjust=1)
+dev.off()
