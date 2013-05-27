@@ -150,8 +150,7 @@ def tandem_dupes_all(file_path, file_start_colname,
     
 def tandem_dupes_all_pairs(file_path, file_start_colname,
                            file_end_colname,
-                           file_chr_colname, 
-                           all_genome_tss, chromosome_list):
+                           file_chr_colname, chromosome_list):
     
     with open(file_path, 'rb') as read_file:
         file_reader = csv.reader(read_file, delimiter='\t')

@@ -42,7 +42,6 @@ if __name__ == '__main__':
                                                                  'start_1', 
                                                                  'end_1', 
                                                                  'chromosome_1', 
-                                                                 all_tss, 
                                                                  chromosome_list)
     
     for chromosome in chromosome_list:
