@@ -53,9 +53,3 @@ if __name__ == '__main__':
                                            chromosome_list, 
                                            chr_length_dic, 
                                            save_output_path)
-    
-    
-    
-    
-    
-
