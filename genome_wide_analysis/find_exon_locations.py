@@ -131,6 +131,23 @@ def calc_distance_from_exon(exon_coordinates, chromosome, firstrow):
     coordinates_list.append(coordinate)
     locations_list.append(location)
     
+    # Append results to current row
+    # If you append more things in the row, ensure that 
+    # you've written enough colnames in your headers to match
+    # the output. 
+    firstrow.append(tandem_pos)
+    firstrow.append(distance)
+    firstrow.append(coordinate[0])    # Exon start
+    firstrow.append(coordinate[1])    # Exon end
+    firstrow.append(location)    # Exon or nonexon
+    # Write appended row to file
+    # Check if row length matches writefile header
+    if len(firstrow) == len(rf_data.outheaders):
+        rf_data.writerow(firstrow)
+    else: 
+        sys.exit('Error: length of row to write '\
+                 'does not match length of colnames')
+    
     # Loop for all other tandem dupes, until either you run out of rows or 
     # current chromosome does not equal to inputed chromosome.
     
