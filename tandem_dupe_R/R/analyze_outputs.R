@@ -32,4 +32,10 @@ tandem_dat <- read.table(file.path(input_dir, filename), header=TRUE, sep='\t')
 
 # PlotDat -----------------------------------------------------------------
 
-qplot(distance_to_tss, data=tandem_dat, binwidth=50000)
+qplot(distance_to_tss, data=tandem_dat, binwidth=50000) + facet_wrap(~chromosome_1)
+qplot(seq_length, data=tandem_dat, binwidth=20, fill=exon_or_nonexon)
+qplot(distance_to_exon, data=tandem_dat, binwidth=50000) + facet_wrap(~chromosome_1)
+qplot(gc_content, data=tandem_dat, binwidth=0.02) + facet_wrap(~chromosome_1)
+
+
+
