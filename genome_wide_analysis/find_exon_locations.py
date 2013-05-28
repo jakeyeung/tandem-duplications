@@ -27,7 +27,7 @@ ref_exonstarts_colname = 'exonStarts'
 ref_exonends_colname = 'exonEnds'
 tandem_chr_colname = 'chromosome_1'    # Equal to 'chromosome_2'
 tandem_start_colname = 'start_1'
-tandem_end_colname = 'end_2'
+tandem_end_colname = 'end_2'    # Not really used....
 output_tandem_pos_colname = 'tandem_dupe_position'
 output_dist_colname = 'distance_to_exon'
 output_exonstart_colname = 'closest_exon_start'
@@ -105,7 +105,7 @@ def find_exon_coordinates(rf_data, chromosome, firstrow):
     # Sort and set exon_list
     return sorted(set(exon_list)), lastrow
 
-def calc_distance_from_exon(exon_coordinates, chromosome, firstrow):
+def calc_distance_from_exon(rf_data, exon_coordinates, chromosome, firstrow):
     '''
     From exon_coordinates, find shortest distance to an exon. Use
     tandem start only...
@@ -228,7 +228,7 @@ def check_exon_or_not(tandem_pos, exon_coordinates):
                 coordinate = exon_coordinates[i-1]
                 distance = dist_prev
             else:
-                raw_input('Distances are equal, enter to put cur exon as shortest.')
+                print('Distances are equal, putting cur exon as shortest.')
                 coordinate = exon_coordinates[i]
                 distance = dist_cur
             break
@@ -237,7 +237,11 @@ def check_exon_or_not(tandem_pos, exon_coordinates):
             prev_exonend = cur_exonend
     else:
         # Loop fell without finding an exon or a closest exon.
-        sys.exit('Loop fell without finding an exon \n %s \n %s' %(tandem_pos, exon_coordinates))
+        # sys.exit('Loop fell without finding an exon \n %s' %(tandem_pos))
+        print('Loop fell without finding an exon, taking current values')
+        coordinate = exon_coordinates[i]
+        distance = exon_coordinates[i][0] - tandem_pos
+        location = 'nonexon'
     return distance, coordinate, location
     
     
@@ -287,7 +291,8 @@ if __name__ == '__main__':
             distances_list, \
             coordinates_list, \
             locations_list, \
-            tandemfirstrow = calc_distance_from_exon(exon_coordinates, 
+            tandemfirstrow = calc_distance_from_exon(rf_data,
+                                                     exon_coordinates, 
                                                      chromosome, 
                                                      tandemfirstrow)
             distances_dict[chromosome] = distances_list

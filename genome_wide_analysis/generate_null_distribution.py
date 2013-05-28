@@ -2,6 +2,7 @@
 Created on 2013-05-19
 
 @author: jyeung
+Generate null distribution for TRANSCRIPTION START SITE DISTANCES. 
 '''
 
 import sys
