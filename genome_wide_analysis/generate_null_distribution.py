@@ -8,7 +8,6 @@ import sys
 import os
 from utilities import set_directories, \
 chr_tools, genome_info, random_genome_locs, jplots, integrate_data
-from analyze_tandem_dupes2 import autoxlim
 
 # Set directories
 _cur_dir, \
@@ -21,6 +20,7 @@ _plot_dir = set_directories.set_directories('inputs',
 
 # Set constants
 # chromosome = raw_input('Insert chromosome in chr format (chr1, chrX, chrY): ')
+output_filename = 'tss_distance_null_distribution.txt'
 genome_chrcolname = 'chrom'
 genome_startcolname = 'txStart'
 plot_output_fname = os.path.join(_plot_dir, 'tandem_dupe_chr_distribution_null_10kb2.pdf')
@@ -48,8 +48,9 @@ if __name__ == '__main__':
     random_locs = random_genome_locs.generate_random_chr_pos(numb_rands_per_chr)
     
     tss_distances_dict, _ = integrate_data.calc_tss_dist(random_locs, all_tss, 
-                                                         chromosome_list)
-    
+                                                         chromosome_list, 
+                                                         os.path.join(_output_dir, output_filename))
+    ''
     tss_distances_list = []
     for dist_list in tss_distances_dict.values():    # Each value is a list
         tss_distances_list.extend(dist_list)
@@ -58,7 +59,13 @@ if __name__ == '__main__':
     integrate_data.bin_distances(tss_distances_list)
     
     # print lessthan2kb, btwn2kb10kb, grtrthan10kb
-        
+    
+    '''
+    with open(os.path.join(_output_dir, output_filename), 'wb') as writefile:
+        outwriter = csv.writer(writefile, delimiter='\t')
+        for dist in tss_distances_list:
+            outwriter.writerow(dist)
+    '''
     
     jplots.plot_binned_bar_graph(tss_distances_list, bins_in_plot, 
                                  xmin,
